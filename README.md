@@ -63,6 +63,27 @@ uvx --version
 npx --version
 ```
 
+## 🚀 Rapid Deployment (Installation)
+
+To spin up this advanced SecOps engine inside a clean or legacy development workspace, clone the repository layout manually:
+
+```bash
+# 1. Clone the master donor footprint into your project path
+git clone https://github.com/AmidVoshakul/opencode-secops-blueprint.git
+
+# 2. Merge infrastructure folders
+mkdir -p .opencode/commands .opencode/instructions .opencode/skills
+cp -r opencode-secops-blueprint/.opencode/commands/* .opencode/commands/
+cp -r opencode-secops-blueprint/.opencode/instructions/* .opencode/instructions/
+cp -r opencode-secops-blueprint/.opencode/skills/* .opencode/skills/
+cp opencode-secops-blueprint/.opencode/opencode.json .opencode/
+
+# 3. Clean up installation artifacts
+rm -rf opencode-secops-blueprint
+```
+
+---
+
 ### 2. Verified 100% Working MCP Configuration Matrix
 Inject this identical block into your `.opencode/opencode.json` file. It maps 13 specialized local Model Context Protocol (MCP) server nodes:
 
@@ -161,26 +182,6 @@ opencode mcp list
 
 ---
 
-## 🚀 Rapid Deployment (Installation)
-
-To spin up this advanced SecOps engine inside a clean or legacy development workspace, clone the repository layout manually:
-
-```bash
-# 1. Clone the master donor footprint into your project path
-git clone https://github.com .tmp_blueprint
-
-# 2. Merge infrastructure folders
-mkdir -p .opencode/commands .opencode/instructions .opencode/skills
-cp -r .tmp_blueprint/.opencode/commands/* .opencode/commands/
-cp -r .tmp_blueprint/.opencode/instructions/* .opencode/instructions/
-cp -r .tmp_blueprint/.opencode/skills/* .opencode/skills/
-cp .tmp_blueprint/.opencode/opencode.json .opencode/
-
-# 3. Clean up installation artifacts
-rm -rf .tmp_blueprint
-```
-
----
 
 ## 🛡️ SecOps Guardrails & Vulnerability Mitigation
 
