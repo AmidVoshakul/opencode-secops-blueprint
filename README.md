@@ -205,4 +205,6 @@ uv run --with "pyyaml>=6.0" python .opencode/skills/agent-orchestrator/scripts/s
 ```
 
 ## 📜 License
-This project-local optimization framework is distributed under the strict terms of the MIT License. Continuous automated audits enforced.
+
+This project-local optimization framework is distributed under the strict terms of the [MIT License](./LICENSE). Continuous automated audits enforced.
+
