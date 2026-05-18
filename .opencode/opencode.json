@@ -1,0 +1,143 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    ".opencode/instructions/*.md",
+    ".opencode/plans/*.md"
+  ],
+  "lsp": {
+    "rust": { "command": ["rust-analyzer"] }
+  },
+  "formatter": {
+    "cargofmt": { "command": ["cargo", "fmt"], "extensions": [".rs"] }
+  },
+  "mcp": {
+    "time": {
+      "type": "local",
+      "enabled": true,
+      "command": ["/home/amid/.local/bin/uvx", "mcp-server-time"]
+    },
+    "duckduckgo": {
+      "type": "local",
+      "enabled": false,
+      "command": ["/home/amid/.local/bin/uvx", "duckduckgo-mcp-server"]
+    },
+    "searxng": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "mcp-searxng"],
+      "environment": {
+        "SEARXNG_URL": "http://localhost:8081"
+      }
+    },
+    "sequential-thinking": {
+      "type": "local",
+      "enabled": true,
+      "command": ["/home/amid/.local/bin/uvx", "sequential-thinking-mcp"]
+    },
+    "filesystem": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/home/amid/Develop/"] 
+    },
+    "fetch": {
+      "type": "local",
+      "enabled": true,
+      "command": ["uvx", "mcp-server-fetch"]
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "chrome-devtools-mcp@latest"]
+    },
+    "playwright_mcp": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "@playwright/mcp@latest"]
+    },
+    "context7": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "@upstash/context7-mcp@latest"]
+    },
+    "memory": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-memory"]
+    },
+    "git": {
+      "type": "local",
+      "enabled": true,
+      "command": ["/home/amid/.local/bin/uvx", "mcp-server-git"]
+    },
+    "code-index": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "/home/amid/.local/bin/uvx",
+        "code-index-mcp",
+        "--project-path",
+        "/home/amid/Develop/chatorai/"
+      ]
+    },
+    "github": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": ""
+      }
+    }
+  },
+  "permission": {
+    "git_git_commit": "ask",
+    "git_git_add": "ask",
+    "git_git_push": "ask",
+    "git_git_merge": "ask",
+    "git_git_pull": "ask",
+    "git_git_create_branch": "ask",
+    "git_git_checkout": "ask",
+    "git_git_reset": "ask",
+    "skill": {
+      "rust-pro": "allow",
+      "rust-async-patterns": "allow",
+      "systems-programming-rust-project": "allow",
+      "backend-architect": "allow",
+      "backend-dev-guidelines": "allow",
+      "security-audit": "allow",
+      "security-scanning-security-sast": "allow",
+      "lint-and-validate": "allow",
+      "code-reviewer": "allow",
+      "clean-code": "allow",
+      "docker-expert": "allow",
+      "documentation": "allow",
+      "agent-memory-systems": "allow",
+      "ai-agent-development": "allow",
+      "ai-agents-architect": "allow",
+      "autonomous-agents": "allow",
+      "autonomous-agent-patterns": "allow",
+      "autonomous-agents": "allow",
+      "multi-agent-patterns": "allow",
+      "workflow-orchestration-patterns": "allow",
+      "agent-tool-builder": "allow",
+      "tool-design": "allow",
+      "conversation-memory": "allow",
+      "agent-orchestrator": "allow",
+      "agent-evaluation": "allow",
+      "evaluation": "allow",
+      "ai-ml": "allow",
+      "memory-systems": "allow",
+      "rag-implementation": "allow",
+      "workflow-automation": "allow",
+      "documentation-templates": "allow",
+      "e2e-testing-patterns": "allow",
+      "deployment-engineer": "allow",
+      "cicd-automation-workflow-automate": "allow",
+      "mcp-builder": "allow",
+      "bill-gates": "allow",
+      "andrej-karpathy": "allow",
+      "ai-native-cli": "allow",
+      "multi-agent-brainstorming": "allow",
+      "*": "deny"
+    }
+  }
+}
