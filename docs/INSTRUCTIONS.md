@@ -55,8 +55,10 @@ Commands are invoked with `/` in the OpenCode TUI. Each command runs as an isola
 
 ### `/git` — Safe Atomic Commit
 **When:** You have changes ready to commit.
-**What:** Runs formatter, executes tests, self-heals trivial errors, groups changes atomically, and creates a Conventional Commit message. All Git operations go through MCP (never raw bash).
+**What:** Runs secret detection scan, formatter, tests, self-heals trivial errors, groups changes atomically, and creates a Conventional Commit message. All Git operations go through MCP (never raw bash).
 **Agent:** `general`
+
+**Security:** Automatically scans for hardcoded tokens (GitHub PAT, OpenAI keys, AWS keys, JWT, private keys) before committing. Blocks commit if secrets are found.
 
 ### `/review` — Code Review
 **When:** Before committing, or after a feature is complete.

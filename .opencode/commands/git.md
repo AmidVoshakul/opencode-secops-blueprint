@@ -17,6 +17,15 @@ Do not ask for textual confirmation in chat regarding git operations; immediatel
    - Read the error logs using `bash` or file utilities.
    - If the error is trivial (e.g., syntax typo, broken import path, formatting edge case), autonomously repair it using `edit` or `write` tools.
    - Re-run the tests. If they fail again or the issue is non-trivial, abort the operation immediately and report the breakdown. Never commit broken code.
+5. **Secret Detection Scan (CRITICAL):** Before staging any files, run the pre-commit hook to detect hardcoded secrets:
+   ```bash
+   if [ -f ".opencode/hooks/pre-commit-secrets.sh" ]; then
+     bash .opencode/hooks/pre-commit-secrets.sh
+   fi
+   ```
+   - If secrets are detected, ABORT immediately and report which files contain hardcoded tokens.
+   - Require the user to replace hardcoded values with environment variables before proceeding.
+   - NEVER commit files containing hardcoded credentials, API keys, tokens, or private keys.
 
 ---
 
@@ -54,6 +63,7 @@ Format: `<type>(<scope>): <description>`
 1. **Analyze Working Tree:** Immediately call `git_git_status` to evaluate the repository state. If the repository is clean, report this to the parent agent in Russian and terminate.
 2. **Inspect Modifications:** Run `git_git_diff_unstaged` or `git_git_diff_staged` to evaluate the exact code modifications line-by-line.
 3. **Execute Pre-Commit Suite:**
+   - Run secret detection scan via `.opencode/hooks/pre-commit-secrets.sh`. ABORT if secrets found.
    - Detect project markers, execute formatting, and trigger tests via `bash`.
    - Apply the **Self-Healing Loop** if tests fail. Ensure everything is passing and stable.
 4. **Formulate Message:** Activate `sequential-thinking_think` to analyze the final clean diff, isolate changes into an atomic package, and construct the perfect Conventional Commit message string in English.

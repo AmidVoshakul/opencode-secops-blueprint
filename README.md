@@ -21,9 +21,17 @@ This repository serves as a master template that injects an advanced multi-agent
    rm -rf opencode-secops-blueprint
    ```
 
-3. **Configure workspace parameters** in `.opencode/opencode.json`:
+3. **Set environment variables** before launching OpenCode:
+   ```bash
+   # Add to ~/.bashrc, ~/.zshrc, or your terminal profile
+   export GITHUB_PERSONAL_ACCESS_TOKEN="your-github-pat-here"
+   ```
+   - Generate a PAT at GitHub Settings → Developer settings → Personal access tokens (classic)
+   - Required scopes: `repo`, `read:org`, `workflow`
+   - **Never hardcode this token in any file** — the blueprint uses `${GITHUB_PERSONAL_ACCESS_TOKEN}`
+
+4. **Configure workspace parameters** in `.opencode/opencode.json`:
    - Set `--project-path` in the `code-index` MCP server to your project directory
-   - Set `GITHUB_PERSONAL_ACCESS_TOKEN` in the `github` MCP server environment
    - Verify MCP servers: `opencode mcp list`
 
 ## Slash Commands
