@@ -13,17 +13,46 @@ You are an Elite Systems Auditor and DevSecOps Architect. Your mission is to per
 
 ## Phase 1: CLI & Environment Check
 1. **OpenCode Version:** Run `opencode --version` to check the active CLI version. Report the version and flag if it appears outdated.
-2. **GitHub Token Check (SECURITY-CRITICAL):** Verify that `GITHUB_PERSONAL_ACCESS_TOKEN` is set in the environment WITHOUT reading or displaying its value:
+2. **GitHub Token Check (SECURITY-CRITICAL):**
+
+   **A. Check opencode.json for placeholder:**
    ```bash
-   if [ -n "$GITHUB_PERSONAL_ACCESS_TOKEN" ]; then
-     echo "GITHUB_PERSONAL_ACCESS_TOKEN is set (length: ${#GITHUB_PERSONAL_ACCESS_TOKEN} chars)"
+   if grep -q '__GITHUB_TOKEN__' .opencode/opencode.json 2>/dev/null; then
+     echo "opencode.json: Contains __GITHUB_TOKEN__ placeholder (correct)"
+   elif grep -qE 'ghp_[A-Za-z0-9]{36}|github_pat_' .opencode/opencode.json 2>/dev/null; then
+     echo "opencode.json: WARNING - Real token detected! Replace with __GITHUB_TOKEN__ placeholder"
    else
-     echo "GITHUB_PERSONAL_ACCESS_TOKEN is NOT set"
+     echo "opencode.json: No token configuration found"
+   fi
+   ```
+
+   **B. Validate token via GitHub API:**
+   ```bash
+   TOKEN=$(python3 -c "
+import json
+with open('.opencode/opencode.json') as f:
+    config = json.load(f)
+print(config.get('mcp', {}).get('github', {}).get('environment', {}).get('GITHUB_PERSONAL_ACCESS_TOKEN', ''))
+" 2>/dev/null)
+
+   if [ -n "$TOKEN" ] && [ "$TOKEN" != "__GITHUB_TOKEN__" ]; then
+     HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $TOKEN" https://api.github.com/user)
+     if [ "$HTTP_CODE" = "200" ]; then
+       LOGIN=$(curl -s -H "Authorization: token $TOKEN" https://api.github.com/user | python3 -c "import sys,json; print(json.load(sys.stdin)['login'])" 2>/dev/null)
+       echo "GitHub API: Token valid (user: $LOGIN)"
+     else
+       echo "GitHub API: Token INVALID (HTTP $HTTP_CODE)"
+     fi
+   elif [ "$TOKEN" = "__GITHUB_TOKEN__" ]; then
+     echo "GitHub API: Placeholder detected — run an installer to configure token"
+   else
+     echo "GitHub API: No token configured"
    fi
    ```
    - **NEVER** print, log, or display the actual token value.
-   - If set, report only: "Token is present (${length} chars, starts with ghp_/github_pat_)" — truncate after prefix check.
-   - If not set, flag as **WARNING**: GitHub-dependent commands (`/pr-master`, GitHub MCP) will fail.
+   - If valid, report: "Token valid (user: <login>)"
+   - If invalid, flag as **WARNING**: GitHub MCP will fail with "Bad credentials".
+   - If placeholder, flag as **INFO**: Run installer or manually replace `__GITHUB_TOKEN__` in opencode.json.
 3. **Code-Index Path Validation:** Read the `--project-path` value from `.opencode/opencode.json` under the `code-index` MCP server. Compare it with the current working directory (`pwd`). If they don't match, flag as **WARNING** and suggest the corrected JSON block.
 
 ## Phase 2: OpenCode Syntax Alignment & Web Verification

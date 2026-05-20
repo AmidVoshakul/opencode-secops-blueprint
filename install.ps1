@@ -103,6 +103,47 @@ Write-Progress -Activity "Installing Blueprint" -Completed
 Write-Host ""
 Write-Ok "Copied $copied files to .opencode/"
 
+function Get-GitHubToken {
+    $token = $env:GITHUB_PERSONAL_ACCESS_TOKEN
+
+    if ($token) {
+        Write-Info "Using token from `$env:GITHUB_PERSONAL_ACCESS_TOKEN environment variable."
+    } else {
+        Write-Host ""
+        $token = Read-Host "Enter GitHub Personal Access Token (or set `$env:GITHUB_PERSONAL_ACCESS_TOKEN)"
+        if (-not $token) {
+            Write-Warn "No token provided. You can configure it later in .opencode/opencode.json"
+            return
+        }
+    }
+
+    # Validate token via GitHub API
+    Write-Info "Validating GitHub token..."
+    try {
+        $headers = @{ "Authorization" = "token $token" }
+        $response = Invoke-WebRequest -Uri "https://api.github.com/user" -Headers $headers -Method Get -UseBasicParsing -TimeoutSec 10
+
+        if ($response.StatusCode -eq 200) {
+            $user = $response.Content | ConvertFrom-Json
+            $login = $user.login
+            Write-Ok "Token valid (user: $login)"
+
+            # Replace placeholder in opencode.json
+            $configFile = Join-Path $OPENCODE_DIR "opencode.json"
+            if (Test-Path $configFile) {
+                $content = Get-Content $configFile -Raw
+                $content = $content -replace "__GITHUB_TOKEN__", $token
+                $content | Set-Content $configFile -NoNewline
+                Write-Ok "GitHub token configured in opencode.json"
+            }
+        } else {
+            Write-Warn "Token validation failed (HTTP $($response.StatusCode)). You can fix it later in .opencode/opencode.json"
+        }
+    } catch {
+        Write-Warn "Token validation failed: $($_.Exception.Message). You can fix it later in .opencode/opencode.json"
+    }
+}
+
 # Patch config
 $configFile = Join-Path $OPENCODE_DIR "opencode.json"
 if (Test-Path $configFile) {
@@ -114,6 +155,9 @@ if (Test-Path $configFile) {
 } else {
     Write-Warn "opencode.json not found, skipping path patch."
 }
+
+# Configure GitHub token
+Get-GitHubToken
 
 # Cleanup
 Remove-Item $tmpDir -Recurse -Force

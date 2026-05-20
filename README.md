@@ -59,14 +59,20 @@ Then update `--project-path` in `.opencode/opencode.json` to your project direct
 
 ## ⚡ Quick Start
 
-1. **Set environment variables** before launching OpenCode:
+1. **Install the blueprint** (choose one method):
    ```bash
-   # Add to ~/.bashrc, ~/.zshrc, or your terminal profile
-   export GITHUB_PERSONAL_ACCESS_TOKEN="your-github-pat-here"
+   # Node.js / npm (any OS) — prompts for token if not set
+   npx opencode-setup
+
+   # Linux / macOS
+   curl -fsSL https://raw.githubusercontent.com/AmidVoshakul/opencode-secops-blueprint/main/install.sh | bash
+
+   # Windows PowerShell
+   Invoke-WebRequest -Uri https://raw.githubusercontent.com/AmidVoshakul/opencode-secops-blueprint/main/install.ps1 | Invoke-Expression
    ```
-   - Generate a PAT at [GitHub Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens)
-   - Required scopes: `repo`, `read:org`, `workflow`
-   - **Never hardcode this token** — the blueprint uses `${GITHUB_PERSONAL_ACCESS_TOKEN}`
+   - The installer automatically configures your GitHub token from `$GITHUB_PERSONAL_ACCESS_TOKEN`
+   - If the variable is not set, you'll be prompted to enter it interactively
+   - **Never hardcode tokens** — the blueprint uses `__GITHUB_TOKEN__` placeholder in the repository
 
 2. **Launch OpenCode** in your project:
    ```bash
@@ -147,6 +153,22 @@ Hardened against **OWASP Agentic Top 10 2026**:
 - **Skill firewall** — `"*": "deny"` default, explicit allowlist only
 - **Isolated execution** — Python runs via `uv run` in ephemeral environments
 - **Zero-trust Git** — all 8 Git operations require explicit user approval
+
+### 🔑 GitHub Token Management
+
+The blueprint uses a **placeholder-based** token system to prevent accidental credential exposure:
+
+| State | `opencode.json` value | Status |
+|---|---|---|
+| Repository (default) | `__GITHUB_TOKEN__` | ✅ Safe to commit |
+| After install | `ghp_...` (real token) | ⚠️ Local only, never commit |
+| Missing | `__GITHUB_TOKEN__` | ℹ️ Run installer or `/doctor-env` |
+
+**How it works:**
+1. Installer detects `$GITHUB_PERSONAL_ACCESS_TOKEN` or prompts for token
+2. Validates token via GitHub API (`/user` endpoint)
+3. Replaces `__GITHUB_TOKEN__` → real token in local `opencode.json`
+4. Pre-commit hook blocks commits containing real tokens
 
 ---
 

@@ -129,6 +129,51 @@ def copy_files(src_dir):
     print()
     success(f"Copied {copied} files to .opencode/")
 
+def get_github_token():
+    """Get and validate GitHub token, replace placeholder in opencode.json."""
+    token = os.environ.get("GITHUB_PERSONAL_ACCESS_TOKEN", "")
+
+    if token:
+        info("Using token from $GITHUB_PERSONAL_ACCESS_TOKEN environment variable.")
+    else:
+        print()
+        try:
+            token = input("Enter GitHub Personal Access Token (or set $GITHUB_PERSONAL_ACCESS_TOKEN): ").strip()
+        except (EOFError, KeyboardInterrupt):
+            token = ""
+        if not token:
+            warn("No token provided. You can configure it later in .opencode/opencode.json")
+            return
+
+    # Validate token via GitHub API
+    info("Validating GitHub token...")
+    try:
+        import urllib.request
+        req = urllib.request.Request(
+            "https://api.github.com/user",
+            headers={"Authorization": f"token {token}"}
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status == 200:
+                import json
+                user = json.loads(resp.read())
+                login = user.get("login", "unknown")
+                success(f"Token valid (user: {login})")
+
+                # Replace placeholder in opencode.json
+                config_file = os.path.join(OPENCODE_DIR, "opencode.json")
+                if os.path.isfile(config_file):
+                    with open(config_file, "r") as f:
+                        content = f.read()
+                    content = content.replace("__GITHUB_TOKEN__", token)
+                    with open(config_file, "w") as f:
+                        f.write(content)
+                    success("GitHub token configured in opencode.json")
+            else:
+                warn(f"Token validation failed (HTTP {resp.status}). You can fix it later in .opencode/opencode.json")
+    except Exception as e:
+        warn(f"Token validation failed: {e}. You can fix it later in .opencode/opencode.json")
+
 def patch_config():
     config_file = os.path.join(OPENCODE_DIR, "opencode.json")
     if not os.path.isfile(config_file):
@@ -184,6 +229,7 @@ def main():
         src_dir = clone_repo(tmp_dir)
         copy_files(src_dir)
         patch_config()
+        get_github_token()
         print_post_install()
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)

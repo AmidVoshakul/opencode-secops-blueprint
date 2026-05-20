@@ -156,6 +156,74 @@ async function copyFiles(srcDir) {
   success(`Copied ${copied} files to .opencode/`);
 }
 
+async function getGitHubToken() {
+  const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN || "";
+  let finalToken = token;
+
+  if (token) {
+    info("Using token from $GITHUB_PERSONAL_ACCESS_TOKEN environment variable.");
+  } else {
+    process.stdout.write("\n");
+    const readline = require("readline").createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    finalToken = await new Promise((resolve) => {
+      readline.question(
+        "Enter GitHub Personal Access Token (or set $GITHUB_PERSONAL_ACCESS_TOKEN): ",
+        (answer) => {
+          readline.close();
+          resolve(answer.trim());
+        }
+      );
+    });
+    if (!finalToken) {
+      warn("No token provided. You can configure it later in .opencode/opencode.json");
+      return;
+    }
+  }
+
+  // Validate token via GitHub API
+  info("Validating GitHub token...");
+  try {
+    const https = require("https");
+    const result = await new Promise((resolve, reject) => {
+      const req = https.get(
+        "https://api.github.com/user",
+        { headers: { Authorization: `token ${finalToken}`, "User-Agent": "opencode-installer" } },
+        (res) => {
+          let data = "";
+          res.on("data", (chunk) => (data += chunk));
+          res.on("end", () => resolve({ status: res.statusCode, data }));
+        }
+      );
+      req.on("error", reject);
+      req.setTimeout(10000, () => {
+        req.destroy();
+        reject(new Error("Timeout"));
+      });
+    });
+
+    if (result.status === 200) {
+      const user = JSON.parse(result.data);
+      success(`Token valid (user: ${user.login})`);
+
+      // Replace placeholder in opencode.json
+      const configFile = path.join(OPENCODE_DIR, "opencode.json");
+      if (fs.existsSync(configFile)) {
+        let content = fs.readFileSync(configFile, "utf8");
+        content = content.replace(/__GITHUB_TOKEN__/g, finalToken);
+        fs.writeFileSync(configFile, content);
+        success("GitHub token configured in opencode.json");
+      }
+    } else {
+      warn(`Token validation failed (HTTP ${result.status}). You can fix it later in .opencode/opencode.json`);
+    }
+  } catch (e) {
+    warn(`Token validation failed: ${e.message}. You can fix it later in .opencode/opencode.json`);
+  }
+}
+
 function patchConfig() {
   const configFile = path.join(OPENCODE_DIR, "opencode.json");
   if (!fs.existsSync(configFile)) {
@@ -208,6 +276,7 @@ async function main() {
     const srcDir = await cloneRepo(tmpDir);
     await copyFiles(srcDir);
     patchConfig();
+    await getGitHubToken();
     printPostInstall();
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });

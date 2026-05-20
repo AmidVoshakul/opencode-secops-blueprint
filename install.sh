@@ -111,7 +111,45 @@ copy_files() {
     success "Copied $total_files files to .opencode/"
 }
 
-# Patch opencode.json
+# Get GitHub token
+get_github_token() {
+    local token=""
+
+    if [ -n "$GITHUB_PERSONAL_ACCESS_TOKEN" ]; then
+        token="$GITHUB_PERSONAL_ACCESS_TOKEN"
+        info "Using token from \$GITHUB_PERSONAL_ACCESS_TOKEN environment variable."
+    else
+        echo ""
+        echo -n "${CYAN}Enter GitHub Personal Access Token (or set \$GITHUB_PERSONAL_ACCESS_TOKEN): ${NC}"
+        read -r token
+        if [ -z "$token" ]; then
+            warn "No token provided. You can configure it later in .opencode/opencode.json"
+            return
+        fi
+    fi
+
+    # Validate token via GitHub API
+    info "Validating GitHub token..."
+    local response
+    response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $token" https://api.github.com/user)
+
+    if [ "$response" = "200" ]; then
+        local login
+        login=$(curl -s -H "Authorization: token $token" https://api.github.com/user | python3 -c "import sys,json; print(json.load(sys.stdin)['login'])" 2>/dev/null || echo "unknown")
+        success "Token valid (user: $login)"
+
+        # Replace placeholder in opencode.json
+        local config_file="$TARGET_DIR/.opencode/opencode.json"
+        if [ -f "$config_file" ]; then
+            sed -i "s/__GITHUB_TOKEN__/$token/g" "$config_file"
+            success "GitHub token configured in opencode.json"
+        fi
+    else
+        warn "Token validation failed (HTTP $response). You can fix it later in .opencode/opencode.json"
+    fi
+}
+
+# Patch config
 patch_config() {
     local config_file="$TARGET_DIR/.opencode/opencode.json"
 
@@ -209,4 +247,5 @@ SRC_DIR=$(echo "$clone_repo_result" | tail -1)
 
 copy_files "$SRC_DIR"
 patch_config
+get_github_token
 print_post_install

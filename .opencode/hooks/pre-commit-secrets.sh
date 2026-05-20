@@ -54,6 +54,8 @@ if [ $FOUND -eq 1 ]; then
   echo "   Then export the variable in your shell:"
   echo "   export API_KEY='your-actual-key'"
   echo ""
+  echo "⚠️  Note: opencode.json must contain __GITHUB_TOKEN__ placeholder, not a real token."
+  echo ""
   exit 1
 else
   echo "✅ No hardcoded secrets detected."
