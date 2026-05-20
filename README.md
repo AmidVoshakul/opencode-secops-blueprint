@@ -4,24 +4,46 @@ Enterprise-grade configuration framework designed to supercharge, discipline, an
 
 This repository serves as a master template that injects an advanced multi-agent runtime pipeline, automatic capability discovery, and strict security guardrails into any software development workspace.
 
+## Installation
+
+Choose your preferred method. All methods perform the same steps:
+clone the blueprint, copy `.opencode/` to your project, and configure paths.
+
+Run from your project's root directory. If `.opencode/` already exists, you'll be prompted before overwriting.
+
+### Quick Install
+
+```bash
+# Node.js / npm (recommended)
+npx opencode-setup
+
+# Linux / macOS
+curl -fsSL https://raw.githubusercontent.com/AmidVoshakul/opencode-secops-blueprint/main/install.sh | bash
+
+# Windows PowerShell
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/AmidVoshakul/opencode-secops-blueprint/main/install.ps1 | Invoke-Expression
+
+# Python (any OS, no dependencies)
+python <(curl -fsSL https://raw.githubusercontent.com/AmidVoshakul/opencode-secops-blueprint/main/install.py)
+```
+
+### Manual Install
+
+```bash
+git clone https://github.com/AmidVoshakul/opencode-secops-blueprint.git
+cd opencode-secops-blueprint
+mkdir -p ../.opencode
+cp -r .opencode/* ../.opencode/
+cd .. && rm -rf opencode-secops-blueprint
+```
+
+Then update `--project-path` in `.opencode/opencode.json` to your project directory.
+
+---
+
 ## Quick Start
 
-1. **Clone the blueprint** into your project:
-   ```bash
-   git clone https://github.com/AmidVoshakul/opencode-secops-blueprint.git
-   ```
-
-2. **Merge infrastructure** into your target project:
-   ```bash
-   mkdir -p .opencode/commands .opencode/instructions .opencode/agents
-   cp -r opencode-secops-blueprint/.opencode/commands/* .opencode/commands/
-   cp -r opencode-secops-blueprint/.opencode/instructions/* .opencode/instructions/
-   cp -r opencode-secops-blueprint/.opencode/agents/* .opencode/agents/
-   cp opencode-secops-blueprint/.opencode/opencode.json .opencode/
-   rm -rf opencode-secops-blueprint
-   ```
-
-3. **Set environment variables** before launching OpenCode:
+1. **Set environment variables** before launching OpenCode:
    ```bash
    # Add to ~/.bashrc, ~/.zshrc, or your terminal profile
    export GITHUB_PERSONAL_ACCESS_TOKEN="your-github-pat-here"
@@ -30,9 +52,15 @@ This repository serves as a master template that injects an advanced multi-agent
    - Required scopes: `repo`, `read:org`, `workflow`
    - **Never hardcode this token in any file** — the blueprint uses `${GITHUB_PERSONAL_ACCESS_TOKEN}`
 
-4. **Configure workspace parameters** in `.opencode/opencode.json`:
-   - Set `--project-path` in the `code-index` MCP server to your project directory
-   - Verify MCP servers: `opencode mcp list`
+2. **Launch OpenCode** in your project:
+   ```bash
+   opencode
+   ```
+
+3. **Run initialization** inside OpenCode:
+   ```
+   /init
+   ```
 
 ## Slash Commands
 
