@@ -1,5 +1,5 @@
 ---
-description: "[Override] Универсальная инициализация проекта: создание профессионального и мощного файла AGENTS.md"
+description: Auto-detect tech stack and generate project AGENTS.md
 agent: general
 subtask: true
 ---

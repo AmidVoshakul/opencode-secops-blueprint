@@ -1,5 +1,5 @@
 ---
-description: Профессиональный аудит тестов (Pro-Test): мутация кода, поиск пустышек, анализ покрытия, выявление дефицита тестов и передача директив главному агенту
+description: Mutation testing, coverage audit, and test generation
 agent: test-engineer
 subtask: true
 ---

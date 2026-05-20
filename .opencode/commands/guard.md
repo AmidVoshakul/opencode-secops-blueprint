@@ -1,5 +1,5 @@
 ---
-description: '[SecOps] Агрессивный аудит безопасности кода по стандартам OWASP Agentic Top 10 2026 и Threat Intel'
+description: Adversarial security audit (OWASP Agentic Top 10 2026)
 agent: security-auditor
 subtask: true
 ---

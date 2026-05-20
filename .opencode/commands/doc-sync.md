@@ -1,5 +1,5 @@
 ---
-description: Синхронизация и профессиональное обновление документации (README, ARCHITECTURE и папки docs/*) на основе изменений в кодовой базе
+description: Synchronize documentation with codebase changes
 agent: docs-writer
 subtask: true
 ---

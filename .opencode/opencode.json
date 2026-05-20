@@ -10,6 +10,20 @@
   // "formatter": {
   //   "cargofmt": { "command": ["cargo", "fmt"], "extensions": [".rs"] }
   // },
+  // "dart": {
+  //   "command": [
+  //     "dart",
+  //     "language-server",
+  //     "--protocol=lsp"
+  //   ],
+  //   "extensions": [".dart"],
+  //   "initialization": {
+  //     "flutterOutline": true,
+  //     "closingLabels": true,
+  //     "suggestFromUnimportedLibraries": true,
+  //     "onlyAnalyzeProjectsWithOpenFiles": false
+  //   }
+  // },
   "mcp": {
     "time": {
       "type": "local",

@@ -1,5 +1,5 @@
 ---
-description: Генерация новой архитектурной структуры (модуля/компонента/сервиса) на основе контекста проекта, активных планов и передача контекста главному агенту
+description: Scaffold new modules and services following project patterns
 agent: general
 subtask: true
 ---
@@ -16,7 +16,7 @@ You are a Principal Software Architect. Your job is to scaffold a completely new
 3. **Plan Alignment:** Scan the `.opencode/plans/` directory. If a roadmap file matches the request in `$ARGUMENTS`, read its specific design definitions, API targets, and parameters to ensure the generated layout perfectly fits the project's long-term vision.
 
 ## Phase 2: Structural Scaffolding
-1. Read the user's input parameter (`$ARGUMENTS`) to understand what feature, service, or component needs to be built.
+1. Read the user's input parameter to understand what feature, service, or component needs to be built.
 2. Design a complete folder and file tree required for this new feature based on the stack analysis and active plans, including:
    - Core logic / Controllers / Services
    - Data models / DTOs / Schemas

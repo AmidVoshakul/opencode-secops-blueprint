@@ -1,5 +1,5 @@
 ---
-description: Тотальный Onboarding-аудит проекта: многостраничный веб-поиск, анализ коммитов, синхронизация .opencode/plans/, авто-Discovery скиллов и передача контекста
+description: Deep project reconnaissance: git history, plans sync, competitor analysis
 agent: general
 subtask: true
 ---

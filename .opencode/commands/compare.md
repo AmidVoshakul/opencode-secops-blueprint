@@ -1,5 +1,5 @@
 ---
-description: Глубокий кросс-проектный бенчмаркинг и архитектурный анализ кода: исследование репозиториев конкурентов, выявление лучших паттернов и генерация матрицы решений
+description: Cross-project benchmarking and competitor architecture analysis
 agent: explore
 subtask: true
 ---

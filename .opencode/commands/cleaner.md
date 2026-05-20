@@ -1,5 +1,5 @@
 ---
-description: Очистка проекта (Cleaner): поиск мертвого кода, неиспользуемых импортов, временных файлов и передача контекста главному агенту
+description: Remove dead code, unused imports, and temporary files
 agent: general
 subtask: true
 ---

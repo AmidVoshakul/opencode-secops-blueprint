@@ -1,5 +1,5 @@
 ---
-description: Диагностика критических багов (Doctor): поиск решений в открытых репозиториях, GitHub Issues, StackOverflow и передача контекста главному агенту
+description: Debug runtime errors via GitHub Issues and web research
 agent: general
 subtask: true
 ---

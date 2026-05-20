@@ -1,5 +1,5 @@
 ---
-description: Создание ветки, безопасный перенос изменений, пуш кода, оформление Pull Request в GitHub и передача контекста главному агенту
+description: Create feature branch, push to GitHub, open professional PR
 agent: general
 subtask: true
 ---
