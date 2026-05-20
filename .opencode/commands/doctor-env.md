@@ -92,18 +92,9 @@ print(config.get('mcp', {}).get('github', {}).get('environment', {}).get('GITHUB
 1. **Validate `AGENTS.md`:** Ensure that vital runtime constraints are present: Language Rules (Russian for talk, English for code), 2026 Year Anchor, and Mandatory Deep Indexing instructions.
 2. **Validate Instructions Directory:** Verify that all available instruction files matching `.opencode/instructions/*.md` are fully legible, integrated, and uncorrupted.
 
-## Phase 5: Skill Firewall, Registry Sync & Mandatory Git Permissions
-1. Check if the orchestrator registry exists, then read it:
-   ```bash
-   if [ -f ".opencode/skills/agent-orchestrator/data/registry.json" ]; then
-     cat .opencode/skills/agent-orchestrator/data/registry.json
-   else
-     echo "registry.json not found, skipping skill sync"
-   fi
-   ```
-   Extract the names of all physical skills discovered on disk.
-2. **Skill Sync Check:** Read the `"permission.skill"` block inside your active `.opencode/opencode.json`. Detect any additions or deletions compared to the physical map, and isolate which skills should be whitelisted.
-3. **Mandatory Git Protection Audit:** Inspect the main `"permission"` object of `.opencode/opencode.json`. You MUST explicitly verify that the following 8 operations are mapped strictly to the `"ask"` value:
+## Phase 5: Skill Firewall & Mandatory Git Permissions
+1. **Read Current Skill Firewall:** Parse the `"permission.skill"` block from `.opencode/opencode.json`. List all skills with `"allow"` status. Note: Skills are lazy-loaded; `"*": "allow"` is the default policy. Verify that critical skills have appropriate permissions.
+2. **Mandatory Git Protection Audit:** Inspect the main `"permission"` object of `.opencode/opencode.json`. You MUST explicitly verify that the following 8 operations are mapped strictly to the `"ask"` value:
    - `git_git_commit`, `git_git_add`, `git_git_push`, `git_git_merge`
    - `git_git_pull`, `git_git_create_branch`, `git_git_checkout`, `git_git_reset`
    If any of these keys are missing, set to `"allow"`, or misconfigured, flag it as a **CRITICAL COMPLIANCE VIOLATION**.
@@ -114,11 +105,11 @@ print(config.get('mcp', {}).get('github', {}).get('environment', {}).get('GITHUB
 3. Execute the LSP server audit: detect languages, check built-in LSP readiness, research custom LSP options, and generate configuration recommendations.
 4. Execute the multi-turn web search loop to read official open-code configuration guidelines.
 5. Compare local JSON schemas and skill lists against the retrieved web data and registry maps.
-6. **Generate the Actionable Hardening Checklist:** If there are any skill mismatches, missing Git permissions, or LSP misconfigurations, you MUST compile complete, copy-pasteable JSON blocks for each issue.
-7. Output the comprehensive "Verified Automation Platform Compliance Report" divided strictly into:
+6. Output the comprehensive "Verified Automation Platform Compliance Report" divided strictly into:
    - **CLI & Environment Diagnostics:** OpenCode version, GitHub token status (presence only, never value), code-index path validation.
    - **LSP Server Audit:** Detected languages, LSP availability status, and ready-to-copy `lsp` configuration blocks for `opencode.json`.
    - **CLI Tooling & Schema Diagnostics:** Version status and schema validation of `opencode.json` verified against live web documentation.
    - **Instruction Prompt Integrity:** Verification score of `AGENTS.md` and active `.opencode/instructions/*.md` files.
-   - **Skill Firewall & Git Mapping Intelligence:** Discrepancy report matching the physical assets against `opencode.json`, explicitly flagging missing or corrupted Git `"ask"` parameters.
+   - **Skill Firewall Audit:** List of enabled skills and `"*": "allow"` confirmation (lazy-loaded model).
+   - **Git Permission Mapping:** Explicit verification of 8 Git `"ask"` parameters.
    - **Actionable Hardening Checklist:** Complete ready-to-copy corrected JSON configuration blocks for easy synchronization.

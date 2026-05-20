@@ -19,11 +19,9 @@ REPO_NAME = "opencode-secops-blueprint"
 TARGET_DIR = os.getcwd()
 OPENCODE_DIR = os.path.join(TARGET_DIR, ".opencode")
 
-# Files/directories to exclude from copy
 EXCLUDE_FILES = {"AGENTS.md", "LICENSE", "README.md"}
 EXCLUDE_DIRS = {".git", "docs"}
 
-# Colors (disabled on Windows without colorama)
 USE_COLORS = platform.system() != "Windows"
 if USE_COLORS:
     RED, GREEN, YELLOW, BLUE, CYAN, NC = "\033[0;31m", "\033[0;32m", "\033[1;33m", "\033[0;34m", "\033[0;36m", "\033[0m"
@@ -100,7 +98,6 @@ def copy_files(src_dir):
         error(".opencode/ directory not found in repository.")
         sys.exit(1)
 
-    # Count total files
     total_files = 0
     for root, dirs, files in os.walk(src_opencode):
         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
@@ -129,6 +126,33 @@ def copy_files(src_dir):
     print()
     success(f"Copied {copied} files to .opencode/")
 
+    # Copy .gitignore.template to project root
+    template_src = os.path.join(src_dir, ".gitignore.template")
+    template_dest = os.path.join(TARGET_DIR, ".gitignore.template")
+    if os.path.isfile(template_src):
+        shutil.copy2(template_src, template_dest)
+        info("Copied .gitignore.template")
+
+def configure_gitignore():
+    gitignore = os.path.join(TARGET_DIR, ".gitignore")
+
+    if not os.path.isfile(gitignore):
+        template = os.path.join(TARGET_DIR, ".gitignore.template")
+        if os.path.isfile(template):
+            shutil.copy2(template, gitignore)
+            success("Created .gitignore from template")
+    else:
+        with open(gitignore, "r") as f:
+            content = f.read()
+        if not re.search(r'^\.opencode/', content, re.MULTILINE):
+            if content and not content.endswith('\n'):
+                f = open(gitignore, "a")
+                f.write("\n")
+                f.close()
+            with open(gitignore, "a") as f:
+                f.write("# OpenCode local config (contains tokens)\n.opencode/\n")
+            info("Added .opencode/ to .gitignore")
+
 def get_github_token():
     """Get and validate GitHub token, replace placeholder in opencode.json."""
     token = os.environ.get("GITHUB_PERSONAL_ACCESS_TOKEN", "")
@@ -145,7 +169,6 @@ def get_github_token():
             warn("No token provided. You can configure it later in .opencode/opencode.json")
             return
 
-    # Validate token via GitHub API
     info("Validating GitHub token...")
     try:
         import urllib.request
@@ -160,7 +183,6 @@ def get_github_token():
                 login = user.get("login", "unknown")
                 success(f"Token valid (user: {login})")
 
-                # Replace placeholder in opencode.json
                 config_file = os.path.join(OPENCODE_DIR, "opencode.json")
                 if os.path.isfile(config_file):
                     with open(config_file, "r") as f:
@@ -177,7 +199,7 @@ def get_github_token():
 def patch_config():
     config_file = os.path.join(OPENCODE_DIR, "opencode.json")
     if not os.path.isfile(config_file):
-        warn("opencode.json not found, skipping path patch.")
+        warn("opencode.json not found, skipping configuration.")
         return
 
     info("Configuring project path...")
@@ -186,7 +208,7 @@ def patch_config():
         content = f.read()
 
     content = content.replace(
-        "/home/amid/Develop/opencode-secops-blueprint/",
+        "__PROJECT_PATH__",
         TARGET_DIR + "/"
     )
 
@@ -203,15 +225,13 @@ def print_post_install():
     print()
     info("Next steps:")
     print()
-    print(f"  1. Set your GitHub token:")
-    print(f"     {CYAN}export GITHUB_PERSONAL_ACCESS_TOKEN=\"your-pat-here\"{NC}")
-    print()
-    print(f"  2. Launch OpenCode in your project:")
+    print(f"  1. Launch OpenCode in your project:")
     print(f"     {CYAN}opencode{NC}")
     print()
-    print(f"  3. Run initialization:")
+    print(f"  2. Run initialization:")
     print(f"     {CYAN}/init{NC}")
     print()
+    info("Install skills: npx antigravity-awesome-skills --path .opencode/skills")
     info("Documentation: https://github.com/AmidVoshakul/opencode-secops-blueprint")
 
 def main():
@@ -228,6 +248,7 @@ def main():
     try:
         src_dir = clone_repo(tmp_dir)
         copy_files(src_dir)
+        configure_gitignore()
         patch_config()
         get_github_token()
         print_post_install()

@@ -90,7 +90,7 @@
         "/home/amid/.local/bin/uvx",
         "code-index-mcp",
         "--project-path",
-        "/home/amid/Develop/opencode-secops-blueprint/"
+        "__PROJECT_PATH__"
       ]
     },
     "github": {
@@ -112,46 +112,7 @@
     "git_git_checkout": "ask",
     "git_git_reset": "ask",
     "skill": {
-      "rust-pro": "allow",
-      "rust-async-patterns": "allow",
-      "systems-programming-rust-project": "allow",
-      "backend-architect": "allow",
-      "backend-dev-guidelines": "allow",
-      "security-audit": "allow",
-      "security-scanning-security-sast": "allow",
-      "lint-and-validate": "allow",
-      "code-reviewer": "allow",
-      "clean-code": "allow",
-      "docker-expert": "allow",
-      "documentation": "allow",
-      "agent-memory-systems": "allow",
-      "ai-agent-development": "allow",
-      "ai-agents-architect": "allow",
-      "autonomous-agents": "allow",
-      "autonomous-agent-patterns": "allow",
-      "autonomous-agents": "allow",
-      "multi-agent-patterns": "allow",
-      "workflow-orchestration-patterns": "allow",
-      "agent-tool-builder": "allow",
-      "tool-design": "allow",
-      "conversation-memory": "allow",
-      "agent-orchestrator": "allow",
-      "agent-evaluation": "allow",
-      "evaluation": "allow",
-      "ai-ml": "allow",
-      "memory-systems": "allow",
-      "rag-implementation": "allow",
-      "workflow-automation": "allow",
-      "documentation-templates": "allow",
-      "e2e-testing-patterns": "allow",
-      "deployment-engineer": "allow",
-      "cicd-automation-workflow-automate": "allow",
-      "mcp-builder": "allow",
-      "bill-gates": "allow",
-      "andrej-karpathy": "allow",
-      "ai-native-cli": "allow",
-      "multi-agent-brainstorming": "allow",
-      "*": "deny"
+      "*": "allow"
     }
   }
 }

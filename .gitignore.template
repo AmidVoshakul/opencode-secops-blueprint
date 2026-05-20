@@ -1,0 +1,72 @@
+# OpenCode SecOps Blueprint
+# Added by installer — .opencode/ contains local tokens and project-specific config
+.opencode/
+
+# ========== Dependencies ==========
+node_modules/
+vendor/
+__pycache__/
+.venv/
+venv/
+env/
+.conda/
+
+# ========== Build Outputs ==========
+dist/
+build/
+target/
+out/
+*.o
+*.so
+*.pyc
+*.pyo
+*.class
+
+# ========== IDE ==========
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# ========== OS ==========
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ========== Logs ==========
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ========== Environment Files ==========
+.env
+.env.local
+.env.*.local
+.env.production
+
+# ========== Secrets (defense in depth) ==========
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*.keystore
+
+# ========== Test Coverage ==========
+coverage/
+.nyc_output/
+lcov.info
+
+# ========== Temporary Files ==========
+*.tmp
+*.temp
+.cache/
+tmp/
+temp/

@@ -146,23 +146,3 @@ All 12 MCP servers are configured as `local` type — they run as child processe
 | `git` | `uvx` | Version control via MCP (not bash) |
 | `code-index` | `uvx` | Deep symbol indexing and search |
 | `github` | `npx` | PR, issues, repo operations |
-
----
-
-## 📋 Command → Agent Mapping
-
-| Command | Agent | Why |
-|---|---|---|
-| `/init` | `general` | Needs full access to detect stack and write AGENTS.md |
-| `/doctor-env` | `general` | Needs full access to audit config, LSP, permissions |
-| `/onboard` | `general` | Needs full access for deep project reconnaissance |
-| `/architect` | `general` | Needs full access to scaffold new modules |
-| `/pro-test` | `test-engineer` | Specialized — isolated context, focused on testing |
-| `/cleaner` | `general` | Needs full access to scan and clean codebase |
-| `/doctor` | `general` | Needs full access for error diagnosis and fixes |
-| `/doc-sync` | `docs-writer` | Specialized — isolated context, focused on documentation |
-| `/git` | `general` | Needs full access for commit workflow |
-| `/review` | `code-reviewer` | Specialized — readonly, focused on review |
-| `/guard` | `security-auditor` | Specialized — readonly, focused on security |
-| `/compare` | `explore` | Built-in readonly agent for analysis |
-| `/pr-master` | `general` | Needs full access for branch/PR workflow |

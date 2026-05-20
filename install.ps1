@@ -103,6 +103,41 @@ Write-Progress -Activity "Installing Blueprint" -Completed
 Write-Host ""
 Write-Ok "Copied $copied files to .opencode/"
 
+# Copy .gitignore.template to project root
+$templateSrc = Join-Path $cloneDest ".gitignore.template"
+$templateDest = Join-Path $TARGET_DIR ".gitignore.template"
+if (Test-Path $templateSrc) {
+    Copy-Item $templateSrc $templateDest -Force
+    Write-Info "Copied .gitignore.template"
+}
+
+# Configure .gitignore
+$gitignore = Join-Path $TARGET_DIR ".gitignore"
+if (-not (Test-Path $gitignore)) {
+    if (Test-Path $templateDest) {
+        Copy-Item $templateDest $gitignore
+        Write-Ok "Created .gitignore from template"
+    }
+} else {
+    $gitContent = Get-Content $gitignore -Raw
+    if ($gitContent -notmatch '^\.opencode/') {
+        Add-Content -Path $gitignore -Value "`n# OpenCode local config (contains tokens)`n.opencode/"
+        Write-Info "Added .opencode/ to .gitignore"
+    }
+}
+
+# Patch config
+$configFile = Join-Path $OPENCODE_DIR "opencode.json"
+if (Test-Path $configFile) {
+    Write-Info "Configuring project path..."
+    $content = Get-Content $configFile -Raw
+    $content = $content -replace "__PROJECT_PATH__", "$TARGET_DIR/"
+    $content | Set-Content $configFile -NoNewline
+    Write-Ok "Project path set to: $TARGET_DIR"
+} else {
+    Write-Warn "opencode.json not found, skipping path patch."
+}
+
 function Get-GitHubToken {
     $token = $env:GITHUB_PERSONAL_ACCESS_TOKEN
 
@@ -117,7 +152,6 @@ function Get-GitHubToken {
         }
     }
 
-    # Validate token via GitHub API
     Write-Info "Validating GitHub token..."
     try {
         $headers = @{ "Authorization" = "token $token" }
@@ -128,7 +162,6 @@ function Get-GitHubToken {
             $login = $user.login
             Write-Ok "Token valid (user: $login)"
 
-            # Replace placeholder in opencode.json
             $configFile = Join-Path $OPENCODE_DIR "opencode.json"
             if (Test-Path $configFile) {
                 $content = Get-Content $configFile -Raw
@@ -144,19 +177,6 @@ function Get-GitHubToken {
     }
 }
 
-# Patch config
-$configFile = Join-Path $OPENCODE_DIR "opencode.json"
-if (Test-Path $configFile) {
-    Write-Info "Configuring project path..."
-    $content = Get-Content $configFile -Raw
-    $content = $content -replace [regex]::Escape("/home/amid/Develop/opencode-secops-blueprint/"), "$TARGET_DIR/"
-    $content | Set-Content $configFile -NoNewline
-    Write-Ok "Project path set to: $TARGET_DIR"
-} else {
-    Write-Warn "opencode.json not found, skipping path patch."
-}
-
-# Configure GitHub token
 Get-GitHubToken
 
 # Cleanup
@@ -170,14 +190,11 @@ Write-Host "========================================================" -Foregroun
 Write-Host ""
 Write-Info "Next steps:"
 Write-Host ""
-Write-Host "  1. Set your GitHub token:"
-Write-Host "     `$env:GITHUB_PERSONAL_ACCESS_TOKEN = `"your-pat-here`"" -ForegroundColor Cyan
-Write-Host "     (Add to `$PROFILE for persistence)"
-Write-Host ""
-Write-Host "  2. Launch OpenCode in your project:"
+Write-Host "  1. Launch OpenCode in your project:"
 Write-Host "     opencode" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "  3. Run initialization:"
+Write-Host "  2. Run initialization:"
 Write-Host "     /init" -ForegroundColor Cyan
 Write-Host ""
+Write-Info "Install skills: npx antigravity-awesome-skills --path .opencode/skills"
 Write-Info "Documentation: https://github.com/AmidVoshakul/opencode-secops-blueprint"

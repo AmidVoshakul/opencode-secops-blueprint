@@ -17,7 +17,6 @@ const OPENCODE_DIR = path.join(TARGET_DIR, ".opencode");
 const EXCLUDE_FILES = new Set(["AGENTS.md", "LICENSE", "README.md"]);
 const EXCLUDE_DIRS = new Set([".git", "docs"]);
 
-// Colors
 const isTTY = process.stdout.isTTY;
 const colors = {
   blue: isTTY ? "\x1b[34m" : "",
@@ -117,7 +116,6 @@ async function copyFiles(srcDir) {
     process.exit(1);
   }
 
-  // Count files
   let totalFiles = 0;
   function countFiles(dir) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -154,6 +152,35 @@ async function copyFiles(srcDir) {
   doCopy(srcOpencode);
   process.stdout.write("\n");
   success(`Copied ${copied} files to .opencode/`);
+
+  // Copy .gitignore.template to project root
+  const templateSrc = path.join(srcDir, ".gitignore.template");
+  const templateDest = path.join(TARGET_DIR, ".gitignore.template");
+  if (fs.existsSync(templateSrc)) {
+    fs.copyFileSync(templateSrc, templateDest);
+    info("Copied .gitignore.template");
+  }
+}
+
+function configureGitignore() {
+  const gitignore = path.join(TARGET_DIR, ".gitignore");
+
+  if (!fs.existsSync(gitignore)) {
+    const template = path.join(TARGET_DIR, ".gitignore.template");
+    if (fs.existsSync(template)) {
+      fs.copyFileSync(template, gitignore);
+      success("Created .gitignore from template");
+    }
+  } else {
+    const content = fs.readFileSync(gitignore, "utf8");
+    if (!content.match(/^\.opencode\//m)) {
+      if (content && !content.endsWith("\n")) {
+        fs.appendFileSync(gitignore, "\n");
+      }
+      fs.appendFileSync(gitignore, "# OpenCode local config (contains tokens)\n.opencode/\n");
+      info("Added .opencode/ to .gitignore");
+    }
+  }
 }
 
 async function getGitHubToken() {
@@ -183,7 +210,6 @@ async function getGitHubToken() {
     }
   }
 
-  // Validate token via GitHub API
   info("Validating GitHub token...");
   try {
     const https = require("https");
@@ -208,7 +234,6 @@ async function getGitHubToken() {
       const user = JSON.parse(result.data);
       success(`Token valid (user: ${user.login})`);
 
-      // Replace placeholder in opencode.json
       const configFile = path.join(OPENCODE_DIR, "opencode.json");
       if (fs.existsSync(configFile)) {
         let content = fs.readFileSync(configFile, "utf8");
@@ -227,16 +252,13 @@ async function getGitHubToken() {
 function patchConfig() {
   const configFile = path.join(OPENCODE_DIR, "opencode.json");
   if (!fs.existsSync(configFile)) {
-    warn("opencode.json not found, skipping path patch.");
+    warn("opencode.json not found, skipping configuration.");
     return;
   }
 
   info("Configuring project path...");
   let content = fs.readFileSync(configFile, "utf8");
-  content = content.replace(
-    /\/home\/amid\/Develop\/opencode-secops-blueprint\//g,
-    TARGET_DIR + "/"
-  );
+  content = content.replace(/__PROJECT_PATH__/g, TARGET_DIR + "/");
   fs.writeFileSync(configFile, content);
   success(`Project path set to: ${TARGET_DIR}`);
 }
@@ -249,15 +271,13 @@ function printPostInstall() {
   process.stdout.write("\n");
   info("Next steps:");
   process.stdout.write("\n");
-  process.stdout.write(`  1. Set your GitHub token:\n`);
-  process.stdout.write(`     ${colors.cyan}export GITHUB_PERSONAL_ACCESS_TOKEN="your-pat-here"${colors.reset}\n`);
-  process.stdout.write("\n");
-  process.stdout.write(`  2. Launch OpenCode in your project:\n`);
+  process.stdout.write(`  1. Launch OpenCode in your project:\n`);
   process.stdout.write(`     ${colors.cyan}opencode${colors.reset}\n`);
   process.stdout.write("\n");
-  process.stdout.write(`  3. Run initialization:\n`);
+  process.stdout.write(`  2. Run initialization:\n`);
   process.stdout.write(`     ${colors.cyan}/init${colors.reset}\n`);
   process.stdout.write("\n");
+  info("Install skills: npx antigravity-awesome-skills --path .opencode/skills");
   info("Documentation: https://github.com/AmidVoshakul/opencode-secops-blueprint");
 }
 
@@ -275,6 +295,7 @@ async function main() {
   try {
     const srcDir = await cloneRepo(tmpDir);
     await copyFiles(srcDir);
+    configureGitignore();
     patchConfig();
     await getGitHubToken();
     printPostInstall();

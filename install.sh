@@ -94,9 +94,7 @@ copy_files() {
     info "Copying blueprint files..."
     mkdir -p "$TARGET_DIR/.opencode"
 
-    # Copy .opencode directory
     if [ -d "$src/.opencode" ]; then
-        # Count files for progress
         find "$src/.opencode" -type f | while IFS= read -r file; do
             local rel_path="${file#$src/.opencode/}"
             local dest_dir="$TARGET_DIR/.opencode/$(dirname "$rel_path")"
@@ -109,6 +107,32 @@ copy_files() {
 
     echo ""
     success "Copied $total_files files to .opencode/"
+
+    # Copy .gitignore.template to project root
+    if [ -f "$src/.gitignore.template" ]; then
+        cp "$src/.gitignore.template" "$TARGET_DIR/.gitignore.template"
+        info "Copied .gitignore.template"
+    fi
+}
+
+# Configure .gitignore
+configure_gitignore() {
+    local gitignore="$TARGET_DIR/.gitignore"
+
+    if [ ! -f "$gitignore" ]; then
+        local template="$TARGET_DIR/.gitignore.template"
+        if [ -f "$template" ]; then
+            cp "$template" "$gitignore"
+            success "Created .gitignore from template"
+        fi
+    else
+        if ! grep -q '^\.opencode/' "$gitignore" 2>/dev/null; then
+            echo "" >> "$gitignore"
+            echo "# OpenCode local config (contains tokens)" >> "$gitignore"
+            echo ".opencode/" >> "$gitignore"
+            info "Added .opencode/ to .gitignore"
+        fi
+    fi
 }
 
 # Get GitHub token
@@ -149,18 +173,17 @@ get_github_token() {
     fi
 }
 
-# Patch config
+# Patch config (project path)
 patch_config() {
     local config_file="$TARGET_DIR/.opencode/opencode.json"
 
     if [ ! -f "$config_file" ]; then
-        warn "opencode.json not found, skipping path patch."
+        warn "opencode.json not found, skipping configuration."
         return
     fi
 
     info "Configuring project path..."
 
-    # Use python for JSON patching (more portable than jq)
     if command -v python3 &>/dev/null; then
         python3 -c "
 import json, sys, os
@@ -171,8 +194,7 @@ project_path = '$TARGET_DIR'
 with open(config_path, 'r') as f:
     content = f.read()
 
-# Replace the hardcoded project path
-content = content.replace('/home/amid/Develop/opencode-secops-blueprint/', project_path + '/')
+content = content.replace('__PROJECT_PATH__', project_path + '/')
 
 with open(config_path, 'w') as f:
     f.write(content)
@@ -189,7 +211,7 @@ project_path = '$TARGET_DIR'
 with open(config_path, 'r') as f:
     content = f.read()
 
-content = content.replace('/home/amid/Develop/opencode-secops-blueprint/', project_path + '/')
+content = content.replace('__PROJECT_PATH__', project_path + '/')
 
 with open(config_path, 'w') as f:
     f.write(content)
@@ -210,15 +232,13 @@ print_post_install() {
     echo ""
     info "Next steps:"
     echo ""
-    echo "  1. Set your GitHub token:"
-    echo -e "     ${CYAN}export GITHUB_PERSONAL_ACCESS_TOKEN=\"your-pat-here\"${NC}"
-    echo ""
-    echo "  2. Launch OpenCode in your project:"
+    echo "  1. Launch OpenCode in your project:"
     echo -e "     ${CYAN}opencode${NC}"
     echo ""
-    echo "  3. Run initialization:"
+    echo "  2. Run initialization:"
     echo -e "     ${CYAN}/init${NC}"
     echo ""
+    info "Install skills: npx antigravity-awesome-skills --path .opencode/skills"
     info "Documentation: https://github.com/AmidVoshakul/opencode-secops-blueprint"
 }
 
@@ -246,6 +266,7 @@ clone_repo_result=$(clone_repo)
 SRC_DIR=$(echo "$clone_repo_result" | tail -1)
 
 copy_files "$SRC_DIR"
+configure_gitignore
 patch_config
 get_github_token
 print_post_install

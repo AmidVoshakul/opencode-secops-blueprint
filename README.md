@@ -74,12 +74,18 @@ Then update `--project-path` in `.opencode/opencode.json` to your project direct
    - If the variable is not set, you'll be prompted to enter it interactively
    - **Never hardcode tokens** — the blueprint uses `__GITHUB_TOKEN__` placeholder in the repository
 
-2. **Launch OpenCode** in your project:
+2. **Install skills** (optional, 1,459+ skills):
+   ```bash
+   npx antigravity-awesome-skills --path .opencode/skills --category development,backend
+   ```
+   Browse the full catalog: [agents-awesome-skills](https://github.com/AmidVoshakul/agents-awesome-skills)
+
+3. **Launch OpenCode** in your project:
    ```bash
    opencode
    ```
 
-3. **Run initialization**:
+4. **Run initialization**:
    ```
    /init
    ```
@@ -150,18 +156,18 @@ Hardened against **OWASP Agentic Top 10 2026**:
 
 - **Pre-commit secret detection** — scans for hardcoded tokens (GitHub PAT, OpenAI keys, AWS keys, JWT, private keys) before every commit
 - **Input sanitization** — all shell parameters validated via `if/fi` guards
-- **Skill firewall** — `"*": "deny"` default, explicit allowlist only
+- **Skill firewall** — `"*": "allow"` for lazy-loaded skills, explicit allowlist for critical operations
 - **Isolated execution** — Python runs via `uv run` in ephemeral environments
 - **Zero-trust Git** — all 8 Git operations require explicit user approval
 
 ### 🔑 GitHub Token Management
 
-The blueprint uses a **placeholder-based** token system to prevent accidental credential exposure:
+The blueprint uses a **placeholder-based** system to prevent accidental credential exposure:
 
 | State | `opencode.json` value | Status |
 |---|---|---|
-| Repository (default) | `__GITHUB_TOKEN__` | ✅ Safe to commit |
-| After install | `ghp_...` (real token) | ⚠️ Local only, never commit |
+| Repository (default) | `__GITHUB_TOKEN__`, `__PROJECT_PATH__` | ✅ Safe to commit |
+| After install | `ghp_...` (real token), `/path/to/project` | ⚠️ Local only, never commit |
 | Missing | `__GITHUB_TOKEN__` | ℹ️ Run installer or `/doctor-env` |
 
 **How it works:**
@@ -169,6 +175,15 @@ The blueprint uses a **placeholder-based** token system to prevent accidental cr
 2. Validates token via GitHub API (`/user` endpoint)
 3. Replaces `__GITHUB_TOKEN__` → real token in local `opencode.json`
 4. Pre-commit hook blocks commits containing real tokens
+
+### 📁 .gitignore Handling
+
+The installer automatically manages `.gitignore` to protect local config:
+
+- **No `.gitignore` in project** → Creates one from template (covers dependencies, build outputs, IDE, secrets, env files)
+- **`.gitignore` exists** → Appends `.opencode/` if not already present
+
+The `.opencode/` directory contains your GitHub token and project-specific skill configuration — it should **never** be committed to version control.
 
 ---
 
