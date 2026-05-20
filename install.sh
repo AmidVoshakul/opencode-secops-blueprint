@@ -135,6 +135,64 @@ configure_gitignore() {
     fi
 }
 
+# Get filesystem path
+get_filesystem_path() {
+    local fs_path=""
+
+    if [ -n "$FILESYSTEM_PATH" ]; then
+        fs_path="$FILESYSTEM_PATH"
+        info "Using path from \$FILESYSTEM_PATH environment variable."
+    else
+        echo ""
+        echo -n "${CYAN}Enter filesystem root path for MCP access (or set \$FILESYSTEM_PATH): ${NC}"
+        read -r fs_path
+        if [ -z "$fs_path" ]; then
+            warn "No path provided. You can configure it later in .opencode/opencode.json"
+            return
+        fi
+    fi
+
+    # Validate path exists
+    if [ ! -d "$fs_path" ]; then
+        warn "Directory '$fs_path' does not exist. You can fix it later in .opencode/opencode.json"
+        return
+    fi
+
+    success "Filesystem path set to: $fs_path"
+
+    # Replace placeholder in opencode.json
+    local config_file="$TARGET_DIR/.opencode/opencode.json"
+    if [ -f "$config_file" ]; then
+        python3 -c "
+import sys, os
+
+config_path = '$config_file'
+fs_path = '$fs_path'
+
+with open(config_path, 'r') as f:
+    content = f.read()
+
+content = content.replace('__FILESYSTEM_PATH__', fs_path)
+
+with open(config_path, 'w') as f:
+    f.write(content)
+" 2>/dev/null || python -c "
+import sys, os
+
+config_path = '$config_file'
+fs_path = '$fs_path'
+
+with open(config_path, 'r') as f:
+    content = f.read()
+
+content = content.replace('__FILESYSTEM_PATH__', fs_path)
+
+with open(config_path, 'w') as f:
+    f.write(content)
+" 2>/dev/null || warn "Failed to patch filesystem path. Please update manually in opencode.json"
+    fi
+}
+
 # Get GitHub token
 get_github_token() {
     local token=""
@@ -268,5 +326,6 @@ SRC_DIR=$(echo "$clone_repo_result" | tail -1)
 copy_files "$SRC_DIR"
 configure_gitignore
 patch_config
+get_filesystem_path
 get_github_token
 print_post_install

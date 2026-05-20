@@ -166,8 +166,8 @@ The blueprint uses a **placeholder-based** system to prevent accidental credenti
 
 | State | `opencode.json` value | Status |
 |---|---|---|
-| Repository (default) | `__GITHUB_TOKEN__`, `__PROJECT_PATH__` | ✅ Safe to commit |
-| After install | `ghp_...` (real token), `/path/to/project` | ⚠️ Local only, never commit |
+| Repository (default) | `__GITHUB_TOKEN__`, `__PROJECT_PATH__`, `__FILESYSTEM_PATH__` | ✅ Safe to commit |
+| After install | `ghp_...` (real token), `/path/to/project`, `/path/to/filesystem` | ⚠️ Local only, never commit |
 | Missing | `__GITHUB_TOKEN__` | ℹ️ Run installer or `/doctor-env` |
 
 **How it works:**
@@ -175,6 +175,13 @@ The blueprint uses a **placeholder-based** system to prevent accidental credenti
 2. Validates token via GitHub API (`/user` endpoint)
 3. Replaces `__GITHUB_TOKEN__` → real token in local `opencode.json`
 4. Pre-commit hook blocks commits containing real tokens
+
+### 📁 Filesystem Path Configuration
+
+The installer prompts for a filesystem root path that the MCP filesystem server will have access to:
+- Set `$FILESYSTEM_PATH` environment variable for non-interactive installs
+- Or enter the path interactively when prompted
+- The path is validated (must exist as a directory) before being configured
 
 ### 📁 .gitignore Handling
 

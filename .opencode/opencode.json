@@ -51,7 +51,7 @@
     "filesystem": {
       "type": "local",
       "enabled": true,
-      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/home/amid/Develop/"] 
+      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "__FILESYSTEM_PATH__"] 
     },
     "fetch": {
       "type": "local",

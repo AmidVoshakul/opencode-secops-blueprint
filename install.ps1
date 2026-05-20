@@ -138,6 +138,36 @@ if (Test-Path $configFile) {
     Write-Warn "opencode.json not found, skipping path patch."
 }
 
+function Get-FilesystemPath {
+    $fsPath = $env:FILESYSTEM_PATH
+
+    if ($fsPath) {
+        Write-Info "Using path from `$env:FILESYSTEM_PATH environment variable."
+    } else {
+        Write-Host ""
+        $fsPath = Read-Host "Enter filesystem root path for MCP access (or set `$env:FILESYSTEM_PATH)"
+        if (-not $fsPath) {
+            Write-Warn "No path provided. You can configure it later in .opencode/opencode.json"
+            return
+        }
+    }
+
+    if (-not (Test-Path $fsPath -PathType Container)) {
+        Write-Warn "Directory '$fsPath' does not exist. You can fix it later in .opencode/opencode.json"
+        return
+    }
+
+    Write-Ok "Filesystem path set to: $fsPath"
+
+    $configFile = Join-Path $OPENCODE_DIR "opencode.json"
+    if (Test-Path $configFile) {
+        $content = Get-Content $configFile -Raw
+        $content = $content -replace "__FILESYSTEM_PATH__", $fsPath
+        $content | Set-Content $configFile -NoNewline
+        Write-Ok "Filesystem path configured in opencode.json"
+    }
+}
+
 function Get-GitHubToken {
     $token = $env:GITHUB_PERSONAL_ACCESS_TOKEN
 

@@ -9,6 +9,7 @@ Usage: python install.py
 import os
 import sys
 import json
+import re
 import shutil
 import subprocess
 import tempfile
@@ -153,6 +154,37 @@ def configure_gitignore():
                 f.write("# OpenCode local config (contains tokens)\n.opencode/\n")
             info("Added .opencode/ to .gitignore")
 
+def get_filesystem_path():
+    """Get filesystem root path for MCP, replace placeholder in opencode.json."""
+    fs_path = os.environ.get("FILESYSTEM_PATH", "")
+
+    if fs_path:
+        info("Using path from $FILESYSTEM_PATH environment variable.")
+    else:
+        print()
+        try:
+            fs_path = input("Enter filesystem root path for MCP access (or set $FILESYSTEM_PATH): ").strip()
+        except (EOFError, KeyboardInterrupt):
+            fs_path = ""
+        if not fs_path:
+            warn("No path provided. You can configure it later in .opencode/opencode.json")
+            return
+
+    if not os.path.isdir(fs_path):
+        warn(f"Directory '{fs_path}' does not exist. You can fix it later in .opencode/opencode.json")
+        return
+
+    success(f"Filesystem path set to: {fs_path}")
+
+    config_file = os.path.join(OPENCODE_DIR, "opencode.json")
+    if os.path.isfile(config_file):
+        with open(config_file, "r") as f:
+            content = f.read()
+        content = content.replace("__FILESYSTEM_PATH__", fs_path)
+        with open(config_file, "w") as f:
+            f.write(content)
+        success("Filesystem path configured in opencode.json")
+
 def get_github_token():
     """Get and validate GitHub token, replace placeholder in opencode.json."""
     token = os.environ.get("GITHUB_PERSONAL_ACCESS_TOKEN", "")
@@ -250,6 +282,7 @@ def main():
         copy_files(src_dir)
         configure_gitignore()
         patch_config()
+        get_filesystem_path()
         get_github_token()
         print_post_install()
     finally:

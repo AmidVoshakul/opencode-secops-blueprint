@@ -183,6 +183,49 @@ function configureGitignore() {
   }
 }
 
+async function getFilesystemPath() {
+  const fsPath = process.env.FILESYSTEM_PATH || "";
+  let finalPath = fsPath;
+
+  if (fsPath) {
+    info("Using path from $FILESYSTEM_PATH environment variable.");
+  } else {
+    process.stdout.write("\n");
+    const readline = require("readline").createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    finalPath = await new Promise((resolve) => {
+      readline.question(
+        "Enter filesystem root path for MCP access (or set $FILESYSTEM_PATH): ",
+        (answer) => {
+          readline.close();
+          resolve(answer.trim());
+        }
+      );
+    });
+    if (!finalPath) {
+      warn("No path provided. You can configure it later in .opencode/opencode.json");
+      return;
+    }
+  }
+
+  if (!fs.existsSync(finalPath)) {
+    warn(`Directory '${finalPath}' does not exist. You can fix it later in .opencode/opencode.json`);
+    return;
+  }
+
+  success(`Filesystem path set to: ${finalPath}`);
+
+  const configFile = path.join(OPENCODE_DIR, "opencode.json");
+  if (fs.existsSync(configFile)) {
+    let content = fs.readFileSync(configFile, "utf8");
+    content = content.replace(/__FILESYSTEM_PATH__/g, finalPath);
+    fs.writeFileSync(configFile, content);
+    success("Filesystem path configured in opencode.json");
+  }
+}
+
 async function getGitHubToken() {
   const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN || "";
   let finalToken = token;
@@ -297,6 +340,7 @@ async function main() {
     await copyFiles(srcDir);
     configureGitignore();
     patchConfig();
+    await getFilesystemPath();
     await getGitHubToken();
     printPostInstall();
   } finally {
