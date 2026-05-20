@@ -1,210 +1,70 @@
-# OpenCode SecOps Blueprint 🚀
+# OpenCode SecOps Blueprint
 
-Enterprise-grade Infrastructure-as-Code (IaC) orchestration framework designed exclusively to superpower, discipline, and secure autonomous AI agents inside the **OpenCode** ecosystem. 
+Enterprise-grade configuration framework designed to supercharge, discipline, and secure autonomous AI agents inside the **OpenCode** ecosystem.
 
-This repository serves as a master template/donor blueprint that injects an advanced multi-agent runtime pipeline, automatic capability discovery, and strict security guardrails into any software development workspace.
+This repository serves as a master template that injects an advanced multi-agent runtime pipeline, automatic capability discovery, and strict security guardrails into any software development workspace.
 
----
+## Quick Start
 
-## 🏗️ Architectural Topology
+1. **Clone the blueprint** into your project:
+   ```bash
+   git clone https://github.com/AmidVoshakul/opencode-secops-blueprint.git
+   ```
 
-The orchestration matrix is split into three decoupled operational layers:
+2. **Merge infrastructure** into your target project:
+   ```bash
+   mkdir -p .opencode/commands .opencode/instructions .opencode/agents
+   cp -r opencode-secops-blueprint/.opencode/commands/* .opencode/commands/
+   cp -r opencode-secops-blueprint/.opencode/instructions/* .opencode/instructions/
+   cp -r opencode-secops-blueprint/.opencode/agents/* .opencode/agents/
+   cp opencode-secops-blueprint/.opencode/opencode.json .opencode/
+   rm -rf opencode-secops-blueprint
+   ```
 
-```text
-  [ AGENTS.md ]  <─── System Prompt Hypervisor (Enforces Discipline & Type-Safety)
-        │
-        ▼
-[ opencode.json ] <─── Zero-Trust Security Firewall (Enforces Deny-By-Default)
-        │
-        ▼
- [ Meta-Scripts ] <─── Cache-driven Multi-Skill Router (<100ms MD5 Auto-Discovery)
-```
+3. **Configure workspace parameters** in `.opencode/opencode.json`:
+   - Set `--project-path` in the `code-index` MCP server to your project directory
+   - Set `GITHUB_PERSONAL_ACCESS_TOKEN` in the `github` MCP server environment
+   - Verify MCP servers: `opencode mcp list`
 
-1. **Global Discipline Layer (`AGENTS.md`):** Deep behavioral compiler. Enforces mandatory `code-index` scanning, context year anchoring (2026), standard *Conventional Commits*, and multi-turn prompt sanitization.
-2. **Security Perimeter Firewall (`opencode.json`):** Strict *Deny-by-default* shield. Isolates local `code-index` bin execution paths (`uvx`) and locks all destructive Git interactions behind explicit manual approval (`"ask"` tokens).
-3. **Dynamic Orchestration Engine (`agent-orchestrator/`):** Multi-agent lifecycle controller. Loops through physical directory metadata, scores tools applicability, and maps execution paths using complex pipeline topologies.
+## Slash Commands
 
----
+| Command | Description |
+|---|---|
+| `/init` | Auto-detect tech stack, generate `AGENTS.md` |
+| `/doctor-env` | Audit config, verify permissions, sync skills |
+| `/onboard` | Git archaeology, competitor analysis, plan sync |
+| `/architect` | Scaffold new modules following project patterns |
+| `/pro-test` | Mutation testing, coverage audit, test generation |
+| `/cleaner` | Remove dead code, unused imports, trailing whitespaces |
+| `/doctor` | Debug runtime errors via web research |
+| `/doc-sync` | Synchronize documentation with codebase |
+| `/git` | Safe commit, branch, and push workflow |
+| `/guard` | Adversarial security audit (OWASP Agentic Top 10) |
+| `/compare` | Cross-project benchmarking and architecture analysis |
+| `/pr-master` | Create PR with professional description |
 
-## ⛓️ Unified Slash Commands Loop
+## Sub-Agents
 
-This blueprint deploys **8 custom autonomous routines** to your local project scope. Every routine leverages high-density context passing via structural `---CONTEXT-BRIDGE---` handovers:
+| Agent | Mode | Purpose |
+|---|---|---|
+| `@security-auditor` | readonly | Security audit, OWASP Top 10, CVE scanning |
+| `@docs-writer` | write+edit | Documentation creation and maintenance |
+| `@test-engineer` | bash+write+edit | Test writing, coverage, mutation testing |
+| `@code-reviewer` | readonly | Code review, best practices, performance |
 
-```text
-📥 /init ➔ 📋 /doctor-env ➔ 📥 /onboard ➔ 🛠️ /architect ➔ 🧪 /pro-test ➔ 🧹 /cleaner ➔ 📝 /doc-sync ➔ 🚀 /pr-master
-                                                                                └── 🩺 /doctor (On Crash)
-```
+## MCP Servers
 
-- **/init** *(Override)* — Auto-detects workspace technology stack and injects a robust, tailored `AGENTS.md` system blueprint.
-- **/doctor-env** — Audit control center. Cross-references local JSON parameters against live web schemas, checks for security compliance gaps, and auto-generates clean Git permissions arrays.
-- **/onboard** — Launches a deep historical Git archaeology pass, scans user timelines, and executes a multi-page web crawl of competitor GitHub trackers to aggregate closed bug panic data (Post-Mortem mitigation mapping). Auto-generates `ARCHITECTURE.md`.
-- **/architect** — Scaffolds empty components, models, interfaces, and test fixtures natively mimicking existing layout design patterns.
-- **/pro-test** — Executes advanced language-agnostic mutation testing (intentionally breaks functions to detect and rewrite "fake/empty" mocks) and dynamically scales the Test Pyramid.
-- **/cleaner** — Safe automated garbage collector. Purges trailing whitespaces, unreferenced internal module imports, and stale local environment debug strings.
-- **/doctor** — Critical runtime error solver. Scrapes StackOverflow threads and community issue logs to compile functional workarounds.
-- **/doc-sync** — Synchronizes active architectural parameters into a strict matrix of 7 technical `.md` domain guides inside `docs/`.
-- **/pr-master** — Wraps staging changes, migrates code out of protected branches, creates descriptive commit records, and deploys clean GitHub Pull Requests linked to active tickets.
+The blueprint configures 12 MCP servers: `time`, `searxng`, `sequential-thinking`, `filesystem`, `fetch`, `chrome-devtools`, `playwright_mcp`, `context7`, `memory`, `git`, `code-index`, `github`.
 
----
+All Git operations are protected by `"ask"` permissions — no automatic commits, pushes, or branch switches.
 
-## ⚙️ Core Platform Requirements & Tooling Installation
+## Security
 
-The orchestration pipeline relies heavily on the fast package installer **`uv`** (`uvx`) and native `npx` execution wrappers.
+Hardened against **OWASP Agentic Top 10 2026**:
+- Input sanitization on all shell parameters
+- Skill firewall (`"*": "deny"` default)
+- Isolated Python execution via `uv run`
 
-### 1. Install System Prerequisites
-Ensure `uv` and Node.js are available on your host system:
-```bash
-# Install uv package manager (provides uvx binary)
-curl -LsSf https://astral.sh | sh
+## License
 
-# Verify installation paths
-export PATH="$HOME/.local/bin:$PATH"
-uvx --version
-npx --version
-```
-
-## 🚀 Rapid Deployment (Installation)
-
-To spin up this advanced SecOps engine inside a clean or legacy development workspace, clone the repository layout manually:
-
-```bash
-# 1. Clone the master donor footprint into your project path
-git clone https://github.com/AmidVoshakul/opencode-secops-blueprint.git
-
-# 2. Merge infrastructure folders
-mkdir -p .opencode/commands .opencode/instructions .opencode/skills
-cp -r opencode-secops-blueprint/.opencode/commands/* .opencode/commands/
-cp -r opencode-secops-blueprint/.opencode/instructions/* .opencode/instructions/
-cp -r opencode-secops-blueprint/.opencode/skills/* .opencode/skills/
-cp opencode-secops-blueprint/.opencode/opencode.json .opencode/
-
-# 3. Clean up installation artifacts
-rm -rf opencode-secops-blueprint
-```
-
----
-
-### 2. Verified 100% Working MCP Configuration Matrix
-Inject this identical block into your `.opencode/opencode.json` file. It maps 13 specialized local Model Context Protocol (MCP) server nodes:
-
-```json
-  "mcp": {
-    "time": {
-      "type": "local",
-      "enabled": true,
-      "command": ["/home/amid/.local/bin/uvx", "mcp-server-time"]
-    },
-    "duckduckgo": {
-      "type": "local",
-      "enabled": false,
-      "command": ["/home/amid/.local/bin/uvx", "duckduckgo-mcp-server"]
-    },
-    "searxng": {
-      "type": "local",
-      "enabled": true,
-      "command": ["npx", "-y", "mcp-searxng"],
-      "environment": {
-        "SEARXNG_URL": "http://localhost:8081"
-      }
-    },
-    "sequential-thinking": {
-      "type": "local",
-      "enabled": true,
-      "command": ["/home/amid/.local/bin/uvx", "sequential-thinking-mcp"]
-    },
-    "filesystem": {
-      "type": "local",
-      "enabled": true,
-      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/home/amid/Develop/"]
-    },
-    "fetch": {
-      "type": "local",
-      "enabled": true,
-      "command": ["uvx", "mcp-server-fetch"]
-    },
-    "chrome-devtools": {
-      "type": "local",
-      "enabled": true,
-      "command": ["npx", "-y", "chrome-devtools-mcp@latest"]
-    },
-    "playwright_mcp": {
-      "type": "local",
-      "enabled": true,
-      "command": ["npx", "-y", "@playwright/mcp@latest"]
-    },
-    "context7": {
-      "type": "local",
-      "enabled": true,
-      "command": ["npx", "-y", "@upstash/context7-mcp@latest"]
-    },
-    "memory": {
-      "type": "local",
-      "enabled": true,
-      "command": ["npx", "-y", "@modelcontextprotocol/server-memory"]
-    },
-    "git": {
-      "type": "local",
-      "enabled": true,
-      "command": ["/home/amid/.local/bin/uvx", "mcp-server-git"]
-    },
-    "code-index": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "/home/amid/.local/bin/uvx",
-        "code-index-mcp",
-        "--project-path",
-        "/home/amid/Develop/<project>/"
-      ]
-    },
-    "github": {
-      "type": "local",
-      "enabled": true,
-      "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
-      "environment": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_PERSONAL_ACCESS_TOKEN_HERE"
-      }
-    }
-  }
-```
-
-### ⚠️ Mandatory Workspace Customization Notes
-Before launching agent routines, you MUST configure your distinct project target parameters:
-1. **`code-index` Project Path:** Modify the `--project-path` parameter inside the JSON block above to point directly to your active repository target (e.g., change `/home/amid/Develop/chatorai/` to your target directory `/home/amid/Develop/nest/`). This guarantees that deep symbol lookups parse the correct files.
-2. **`github` Auth Token:** Inject your GitHub Personal Access Token (PAT) directly into the `GITHUB_PERSONAL_ACCESS_TOKEN` environment variable slot. This token must possess comprehensive `repo` and `pull_requests` scope definitions to authorize the `/pr-master` engine.
-
-### 🔍 Verification Command
-To verify that all 13 servers are properly bound, compiled, and online, run the native OpenCode validation tool:
-```bash
-opencode mcp list
-```
-*Ensure all targets display operational bounds and exposed tool schemas without exceptions before proceeding.*
-
----
-
-
-## 🛡️ SecOps Guardrails & Vulnerability Mitigation
-
-This architecture is hardened against the **OWASP Agentic Top 10 2026** specifications:
-
-- **Anti-ASI01/ASI05 (Goal Hijacking & Command Injection):** All string variables passed into active terminal processes are pre-filtered via robust input encapsulation loops inside Python execution nodes. Bypasses raw terminal evaluation completely.
-- **Anti-ASI04 (Ecosystem Skill Poisoning):** Evaluates local skill registries through an immutable point-allocation scoring algorithm. Any unverified community skill tool is instantly dropped by the global `"*" : "deny"` kernel firewall rules.
-- **Environment Isolation:** Python execution sequences bypass the system-wide shell constraint using isolated, lightning-fast ephemeral caching maps:
-```bash
-uv run --with "pyyaml>=6.0" python .opencode/skills/...
-```
-
----
-
-## 📊 Compliance Diagnostics
-
-Run the integrated environment auditor to verify data synchronization bounds and pipeline status layouts:
-
-```bash
-uv run --with "pyyaml>=6.0" python .opencode/skills/agent-orchestrator/scripts/scan_registry.py --status
-```
-
-## 📜 License
-
-This project-local optimization framework is distributed under the strict terms of the [MIT License](./LICENSE). Continuous automated audits enforced.
-
+[MIT License](./LICENSE)

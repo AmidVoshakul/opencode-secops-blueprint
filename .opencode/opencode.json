@@ -4,12 +4,12 @@
     ".opencode/instructions/*.md",
     ".opencode/plans/*.md"
   ],
-  "lsp": {
-    "rust": { "command": ["rust-analyzer"] }
-  },
-  "formatter": {
-    "cargofmt": { "command": ["cargo", "fmt"], "extensions": [".rs"] }
-  },
+  // "lsp": {
+  //   "rust": { "command": ["rust-analyzer"] }
+  // },
+  // "formatter": {
+  //   "cargofmt": { "command": ["cargo", "fmt"], "extensions": [".rs"] }
+  // },
   "mcp": {
     "time": {
       "type": "local",
@@ -76,7 +76,7 @@
         "/home/amid/.local/bin/uvx",
         "code-index-mcp",
         "--project-path",
-        "/home/amid/Develop/chatorai/"
+        "/home/amid/Develop/opencode-secops-blueprint/"
       ]
     },
     "github": {
@@ -84,7 +84,7 @@
       "enabled": true,
       "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
       "environment": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": ""
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
       }
     }
   },

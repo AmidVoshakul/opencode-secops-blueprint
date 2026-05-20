@@ -1,6 +1,6 @@
 ---
 description: Синхронизация и профессиональное обновление документации (README, ARCHITECTURE и папки docs/*) на основе изменений в кодовой базе
-agent: general
+agent: docs-writer
 subtask: true
 ---
 

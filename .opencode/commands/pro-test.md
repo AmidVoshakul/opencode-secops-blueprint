@@ -1,6 +1,6 @@
 ---
 description: Профессиональный аудит тестов (Pro-Test): мутация кода, поиск пустышек, анализ покрытия, выявление дефицита тестов и передача директив главному агенту
-agent: general
+agent: test-engineer
 subtask: true
 ---
 
@@ -42,4 +42,4 @@ Map your compiled blueprints against the Test Pyramid levels:
    - Any "fake" tests discovered and corrected.
    - Current coverage metrics.
    - A structured list of **Test Generation Requirements** mapped by file and function for the primary agent to build.
-5. **MANDATORY PRIMARY AGENT HANDOVER (CONTEXT BRIDGE):** At the absolute end of your response, you MUST generate a separate, isolated block enclosed in `---CONTEXT-BRIDGE---` markers. Write a dense, structured technical summary of the exact coverage percentages achieved, specific files modified to fix "fake" тесты, and a structured array or block detailing **EXPLICIT TEST GENERATION TASKS** (specifying target filenames and missing functions). This ensures the primary parent agent instantly captures the test deficit and can immediately start generating the missing tests inside the main chat session.
+
